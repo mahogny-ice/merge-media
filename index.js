@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
 
 app.post('/mergeaudio', (req, res) => {
 
-    const { track1, track2, outputDir } = req.body;
+    const { track1, track2 } = req.body;
 
     const command = ffmpeg()
         .input(track1)
