@@ -56,6 +56,7 @@ app.post('/mergeaudio', async (req, res) => {
             contentType: 'audio/mpeg'
         }
     })
+
     command.pipe(writeStream, { end: true });
 
     await new Promise((resolve, reject) => {
@@ -73,6 +74,7 @@ app.post('/mergeaudio', async (req, res) => {
         action: 'read',
         expires: '04-09-2025'
     });
+
     res.json({ downloadUrl });
 
     command.on('error', (err) => {

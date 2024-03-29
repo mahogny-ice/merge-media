@@ -24,14 +24,27 @@
             Merge
         </button>
 
-        <audio controls>
-            <source id="audioPlayer" src="/" type="audio/mpeg">
+        <div id="downloadLinkContainer" style="display: none">
+            <button id="downloadButton">
+                Download merged clip
+            </button>
+            <a href="/" id="downloadLink"></a>
+        </div>
+
+        <audio controls id="audioControls">
+            <source id="audioElement" src="" type="audio/mpeg">
+            Your browser does not support the audio element.
         </audio>
-        <p>Download link</p>
-        <a id="downloadLink" href="/"></a>
+
     </div>
 
     <script>
+
+        document.getElementById('downloadButton').addEventListener('click', () => {
+            console.log('download button clicked');
+            document.getElementById('downloadLink').click();
+        });
+
         document.getElementById('mergeButton').addEventListener('click', async () => {
             console.log('merge button clicked');
 
@@ -49,11 +62,16 @@
                 })
             });
 
-            const data = await response.json();
-            console.log(data);
-            document.getElementById('downloadLink').href = data.downloadUrl;
-            document.getElementById('downloadLink').innerText = data.downloadUrl;
+            const data = await response.json().then(data => {
+                document.getElementById('downloadLink').href = data.downloadUrl;
 
+                const audioElement = document.getElementById('audioElement');
+                audioElement.src = data.downloadUrl;
+                audioElement.parentElement.load();
+                audioElement.parentElement.style.opacity = 1;
+
+                document.getElementById('downloadLinkContainer').style.display = 'block';
+            })
         });
     </script>
 </body>
