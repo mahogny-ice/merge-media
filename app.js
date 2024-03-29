@@ -21,21 +21,17 @@ app.post('/mergeaudio', (req, res) => {
         .complexFilter([
             { filter: 'amix', inputs: 2, duration: 'longest' }
         ])
-        .mergeToFile('/tmp/merged_output.mp3', '/tmp')
         .format('mp3')
-        .on('error', (err) => {
-            console.error('Error during merging:', err);
-        })
-        .on('end', () => {
-            console.log('Audio tracks merged successfully!');
-        })
 
     res.set('Content-Type', 'audio/mpeg');
     command.pipe(res, { end: true });
 
     command.on('error', (err) => {
         console.error('Error merging audio:', err);
-        res.status(500).send('Error merging audio');
+    });
+
+    command.on('end', () => {
+        console.log('Audio tracks merged successfully!');
     });
 });
 
