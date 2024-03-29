@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media merge</title>
+    <link rel="stylesheet" href="/app.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="trackContainer">
+            <p>Track 1 url</p>
+            <input type="text" id="track1" placeholder="Track 1" />
+        </div>
+
+        <div class="trackContainer">
+            <p>Track 2 url</p>
+            <input type="text" id="track2" placeholder="Track 2" />
+        </div>
+
+        <button id="mergeButton">
+            Merge
+        </button>
+
+        <audio controls>
+            <source id="audioPlayer" src="/" type="audio/mpeg">
+        </audio>
+        <p>Download link</p>
+        <a id="downloadLink" href="/"></a>
+    </div>
+
+    <script>
+        document.getElementById('mergeButton').addEventListener('click', async () => {
+            console.log('merge button clicked');
+
+            const track1 = document.getElementById('track1').value;
+            const track2 = document.getElementById('track2').value;
+
+            const response = await fetch('/mergeaudio', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    track1,
+                    track2
+                })
+            });
+
+            const data = await response.json();
+            console.log(data);
+            document.getElementById('downloadLink').href = data.downloadUrl;
+            document.getElementById('downloadLink').innerText = data.downloadUrl;
+
+        });
+    </script>
+</body>
+
+</html>
