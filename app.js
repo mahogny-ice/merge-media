@@ -1,8 +1,6 @@
 const ffmpeg = require('fluent-ffmpeg');
 const admin = require('firebase-admin');
 require('dotenv').config();
-const { v4: uuidv4 } = require('uuid');
-
 
 const express = require('express')
 const app = express()
@@ -26,8 +24,6 @@ admin.initializeApp({
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET
 })
 
-const id = uuidv4();
-
 const bucket = admin.storage().bucket();
 
 app.get('/', (req, res) => {
@@ -36,7 +32,11 @@ app.get('/', (req, res) => {
 
 app.post('/mergeaudio', async (req, res) => {
 
-    const { track1, track2 } = req.body;
+    const {
+        track1,
+        track2,
+        storageFilename,
+    } = req.body;
 
     const command = ffmpeg()
         .input(track1)
@@ -46,8 +46,7 @@ app.post('/mergeaudio', async (req, res) => {
         ])
         .format('mp3')
 
-    const folder = 'merges';
-    const filename = `${folder}/${id}.mp3`;
+    const filename = storageFilename;
     const file = bucket.file(filename);
 
     const writeStream = file.createWriteStream({
