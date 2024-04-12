@@ -1,7 +1,8 @@
-import ffmpeg from 'fluent-ffmpeg';
-import admin from 'firebase-admin';
-import "dotenv/config";
+import { spawn } from 'child_process';
 import express from 'express';
+import admin from 'firebase-admin';
+import fs from 'fs';
+import "dotenv/config";
 
 const app = express();
 const port = 3000;
@@ -24,9 +25,9 @@ app.get('/', (request, response) => {
 });
 
 interface RequestBody {
+    jobId: string;
     track1: Track;
     track2: Track;
-    storageFilename: string;
 }
 
 type Track = {
@@ -36,76 +37,51 @@ type Track = {
 }
 
 app.post('/mergeaudio', async (request, response) => {
-    console.log("Request body", request.body);
-    let command: ffmpeg.FfmpegCommand;
     const {
+        jobId,
         track1,
         track2,
-        storageFilename,
     } = request.body as RequestBody;
 
-    try {
-        console.log('Track1.volume: ' + track1.volume);
-        console.log('Track2.volume: ' + track2.volume);
+    const outputFilePath = '/tmp/output.mp3';
 
-        command = ffmpeg()
-            .input(track1.url)
-            .input(track2.url)
-            .complexFilter([
-                // @ts-ignore
-                { filter: 'amix', inputs: 2 },
-            ])
-            .format('mp3')
+    const filtersTrack1 = `volume=${track1.volume},adelay=${track1.offset}|${track1.offset}`;
+    const filtersTrack2 = `volume=${track2.volume},adelay=${track2.offset}|${track2.offset}`;
+    const complexFilter = `"[0:a]${filtersTrack1}[a0];[1:a]${filtersTrack2}[a1];[a0][a1]amix=inputs=2"`;
+    const ffmpegCommand = `ffmpeg -nostdin -i "${track1.url}" -i "${track2.url}" -filter_complex ${complexFilter} -ac 2 -f mp3 ${outputFilePath}`
+    const ffmpegProcess = spawn(ffmpegCommand, { shell: true });
 
+    ffmpegProcess
+        .on('exit', (code: any) => {
+            if (code !== 0) {
+                console.error('Error merging audio:', code);
+                response.send("Error merging audio");
+                return;
+            } else {
+                // TODO: Update destination to a proper path
+                const destination = `mergedAudio/${jobId}.mp3`;
 
-        const filename = storageFilename;
-        const file = bucket.file(filename);
+                bucket.upload(outputFilePath, { destination })
+                    .then(async () => {
+                        console.log('Merged audio successfully uploaded to Firebase Storage!');
+                        fs.unlinkSync(outputFilePath);
 
-        const writeStream = file.createWriteStream({
-            resumable: false,
-            metadata: {
-                contentType: 'audio/mpeg'
+                        const file = bucket.file(destination);
+                        const downloadUrl = await file.getSignedUrl({
+                            action: 'read',
+                            expires: '03-09-2491'
+                        });
+
+                        response.json({ downloadUrl });
+                        return;
+                    })
+                    .catch((error) => {
+                        console.error('Error uploading merged audio to Firebase Storage:', error);
+                        response.send("Error uploading merged audio to Firebase Storage");
+                        return;
+                    });
             }
-        })
-
-        command.pipe(writeStream, { end: true });
-
-        await new Promise<void>((resolve, reject) => {
-            writeStream.on('finish', () => {
-                console.log('File uploaded to Cloud Storage successfully!');
-                resolve();
-            });
-            writeStream.on('error', (error) => {
-                console.error('Error uploading file to Cloud Storage:', error);
-                reject();
-            });
         });
-
-        const downloadUrl = await file.getSignedUrl({
-            action: 'read',
-            expires: '04-09-2025',
-        });
-
-        response.json({ downloadUrl });
-
-    } catch (error) {
-        console.error('Error merging audio:', error);
-        response.send("Error merging audio");
-        return;
-    }
-
-
-
-
-    command.on('error', (error) => {
-        console.error('Error merging audio:', error);
-        response.send("Error merging audio");
-        return;
-    });
-
-    command.on('end', () => {
-        console.log('Audio tracks merged successfully!');
-    });
 });
 
 app.listen(port, () => {
