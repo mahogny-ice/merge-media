@@ -5,22 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media merge</title>
-    <link rel="stylesheet" href="/app.css">
+    <link rel="stylesheet" href="./app.css">
 </head>
 
 <body>
     <div class="container">
         <div class="trackContainer">
-            <p>Track 1 url</p>
-            <input type="text" id="track1" placeholder="Track 1" />
+            <p>Track 1</p>
+            <div>
+                <input type="text" id="track1" placeholder="Url" />
+                <input type="number" id="track1_volume" placeholder="Volume" />
+                <input type="number" id="track1_offset" placeholder="Offset" />
+            </div>
+
         </div>
 
         <div class="trackContainer">
-            <p>Track 2 url</p>
-            <input type="text" id="track2" placeholder="Track 2" />
+            <p>Track 2</p>
+            <div>
+                <input type="text" id="track2" placeholder="Url" />
+                <input type="number" id="track2_volume" placeholder="Volume" />
+                <input type="number" id="track2_offset" placeholder="Offset" />
+            </div>
         </div>
 
-        <button id="mergeButton">
+        <button id="mergeButton" style="margin: 20px 0px">
             Merge
         </button>
 
@@ -31,6 +40,7 @@
             <a href="/" id="downloadLink"></a>
         </div>
 
+        <br />
         <audio controls id="audioControls">
             <source id="audioElement" src="" type="audio/mpeg">
             Your browser does not support the audio element.
@@ -48,18 +58,26 @@
         document.getElementById('mergeButton').addEventListener('click', async () => {
             console.log('merge button clicked');
 
-            const track1 = document.getElementById('track1').value;
-            const track2 = document.getElementById('track2').value;
+            const input = {
+                track1: {
+                    url: document.getElementById('track1').value,
+                    volume: document.getElementById('track1_volume').value,
+                    offset: document.getElementById('track1_offset').value
+                },
+                track2: {
+                    url: document.getElementById('track2').value,
+                    volume: document.getElementById('track2_volume').value,
+                    offset: document.getElementById('track2_offset').value
+                },
+                storageFilename: "/merged.mp3",
+            };
 
             const response = await fetch('/mergeaudio', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    track1,
-                    track2
-                })
+                body: JSON.stringify(input),
             });
 
             const data = await response.json().then(data => {
