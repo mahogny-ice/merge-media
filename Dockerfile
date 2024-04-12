@@ -3,7 +3,7 @@
 FROM --platform=linux/amd64 node:lts-alpine
 
 # Working directory
-WORKDIR /usr/dist/app
+WORKDIR /usr/
 
 # Install system dependencies for ffmpeg (Alpine Linux)
 RUN apk add --no-cache ffmpeg
