@@ -16,9 +16,11 @@ RUN npm install
 
 # Copy the rest of your application code 
 COPY . .
+RUN npm run build 
+
 
 # Expose the port 
 EXPOSE 3000
 
 # Start the app
-CMD ["node", "app.js"] 
+CMD ["node", "/dist/app.js"] 
