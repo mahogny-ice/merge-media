@@ -35,6 +35,7 @@ app.get('/', (request, response) => {
     response.sendFile(__dirname + '/public/index.html');
 });
 app.get('/wakeup', (request, response) => {
+    console.log('Wakeup answered. Ready to merge...');
     response.send('Ready to merge...');
 });
 app.post('/mergeaudio', (request, response) => __awaiter(void 0, void 0, void 0, function* () {
@@ -76,5 +77,5 @@ app.post('/mergeaudio', (request, response) => __awaiter(void 0, void 0, void 0,
     });
 }));
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
+    console.log(`App listening on port ${port}`);
 });

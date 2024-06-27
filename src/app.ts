@@ -37,6 +37,7 @@ type Track = {
 }
 
 app.get('/wakeup', (request, response) => {
+    console.log('Wakeup answered. Ready to merge...');
     response.send('Ready to merge...');
 });
 
