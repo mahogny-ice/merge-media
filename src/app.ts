@@ -36,6 +36,10 @@ type Track = {
     volume: number;
 }
 
+app.get('/wakeup', (request, response) => {
+    response.send('Ready to merge...');
+});
+
 app.post('/mergeaudio', async (request, response) => {
     const {
         jobId,

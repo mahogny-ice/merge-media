@@ -34,6 +34,9 @@ const bucket = firebase_admin_1.default.storage().bucket();
 app.get('/', (request, response) => {
     response.sendFile(__dirname + '/public/index.html');
 });
+app.get('/wakeup', (request, response) => {
+    response.send('Ready to merge...');
+});
 app.post('/mergeaudio', (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     const { jobId, track1, track2, } = request.body;
     const outputFilePath = '/tmp/output.mp3';
