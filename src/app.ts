@@ -77,7 +77,7 @@ app.post('/mergeaudio', async (request, response) => {
                             expires: '03-09-2491'
                         });
 
-                        response.json({ downloadUrl });
+                        response.json({ url: downloadUrl });
                         return;
                     })
                     .catch((error) => {

@@ -65,7 +65,7 @@ app.post('/mergeaudio', (request, response) => __awaiter(void 0, void 0, void 0,
                     action: 'read',
                     expires: '03-09-2491'
                 });
-                response.json({ downloadUrl });
+                response.json({ url: downloadUrl });
                 return;
             }))
                 .catch((error) => {
