@@ -62,7 +62,7 @@ app.post('/mergeaudio', async (request, response) => {
                 console.error('Error merging audio:', code);
                 response.send("Error merging audio");
             } else {
-                // TODO: Update destination to a proper path
+                // TODO: Update destination to a proper path | Jira (SN-96)
                 const destination = `mergedAudio/${jobId}.mp3`;
 
                 bucket.upload(outputFilePath, { destination })
