@@ -1,0 +1,8 @@
+steps:
+  - name: 'gcr.io/cloudbuild/docker'
+    args: ['build', '-t', 'gcr.io/ai-marketing-e2b7e/github.com/mahogny-ice/merge-media:latest', '-f', 'Dockerfile', '.']
+  - name: 'gcr.io/cloudbuild/docker'
+    args: ['push', 'gcr.io/ai-marketing-e2b7e/github.com/mahogny-ice/merge-media:latest']
+  - name: 'gcr.io/cloudbuild/docker'
+    args: ['run', 'deploy', 'merge-media', '--image', 'gcr.io/ai-marketing-e2b7e/github.com/mahogny-ice/merge-media:latest', '--region', 'global']
+logs_bucket: 'gs://ai-marketing-e2b7e.appspot.com/logs' 
