@@ -48,7 +48,7 @@ app.post('/mergeaudio', async (request, response) => {
         track2,
     } = request.body as RequestBody;
 
-    const outputFilePath = '/tmp/output.mp3';
+    const outputFilePath = `/tmp/${jobId}.mp3`;
 
     const filtersTrack1 = `volume=${track1.volume},adelay=${track1.offset}|${track1.offset}`;
     const filtersTrack2 = `volume=${track2.volume},adelay=${track2.offset}|${track2.offset}`;
@@ -61,7 +61,6 @@ app.post('/mergeaudio', async (request, response) => {
             if (code !== 0) {
                 console.error('Error merging audio:', code);
                 response.send("Error merging audio");
-                return;
             } else {
                 // TODO: Update destination to a proper path
                 const destination = `mergedAudio/${jobId}.mp3`;
@@ -78,12 +77,10 @@ app.post('/mergeaudio', async (request, response) => {
                         });
 
                         response.json({ url: downloadUrl });
-                        return;
                     })
                     .catch((error) => {
                         console.error('Error uploading merged audio to Firebase Storage:', error);
                         response.send("Error uploading merged audio to Firebase Storage");
-                        return;
                     });
             }
         });

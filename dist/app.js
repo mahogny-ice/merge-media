@@ -40,7 +40,7 @@ app.get('/wakeup', (request, response) => {
 });
 app.post('/mergeaudio', (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     const { jobId, track1, track2, } = request.body;
-    const outputFilePath = '/tmp/output.mp3';
+    const outputFilePath = `/tmp/${jobId}.mp3`;
     const filtersTrack1 = `volume=${track1.volume},adelay=${track1.offset}|${track1.offset}`;
     const filtersTrack2 = `volume=${track2.volume},adelay=${track2.offset}|${track2.offset}`;
     const complexFilter = `"[0:a]${filtersTrack1}[a0];[1:a]${filtersTrack2}[a1];[a0][a1]amix=inputs=2"`;
@@ -51,7 +51,6 @@ app.post('/mergeaudio', (request, response) => __awaiter(void 0, void 0, void 0,
         if (code !== 0) {
             console.error('Error merging audio:', code);
             response.send("Error merging audio");
-            return;
         }
         else {
             // TODO: Update destination to a proper path
@@ -66,12 +65,10 @@ app.post('/mergeaudio', (request, response) => __awaiter(void 0, void 0, void 0,
                     expires: '03-09-2491'
                 });
                 response.json({ url: downloadUrl });
-                return;
             }))
                 .catch((error) => {
                 console.error('Error uploading merged audio to Firebase Storage:', error);
                 response.send("Error uploading merged audio to Firebase Storage");
-                return;
             });
         }
     });
