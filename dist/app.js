@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var _a;
+var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
 const express_1 = __importDefault(require("express"));
@@ -19,12 +19,12 @@ const firebase_admin_1 = __importDefault(require("firebase-admin"));
 const fs_1 = __importDefault(require("fs"));
 require("dotenv/config");
 const app = (0, express_1.default)();
-const port = 3000;
+const port = (_a = process.env.PORT) !== null && _a !== void 0 ? _a : 8080;
 app.use(express_1.default.static('public'));
 app.use(express_1.default.json());
 firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert({
-        privateKey: (_a = process.env.FIREBASE_PRIVATE_KEY) === null || _a === void 0 ? void 0 : _a.replace(/\\n/g, '\n'),
+        privateKey: (_b = process.env.FIREBASE_PRIVATE_KEY) === null || _b === void 0 ? void 0 : _b.replace(/\\n/g, '\n'),
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         projectId: process.env.FIREBASE_PROJECT_ID,
     }),
@@ -37,6 +37,9 @@ app.get('/', (request, response) => {
 app.get('/wakeup', (request, response) => {
     console.log('Wakeup answered. Ready to merge...');
     response.send('Ready to merge...');
+});
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
 });
 app.post('/mergeaudio', (request, response) => __awaiter(void 0, void 0, void 0, function* () {
     const { jobId, track1, track2, } = request.body;
