@@ -41,6 +41,10 @@ app.get('/wakeup', (request, response) => {
     response.send('Ready to merge...');
 });
 
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
+
 app.post('/mergeaudio', async (request, response) => {
     const {
         jobId,
