@@ -10,8 +10,9 @@ RUN apk add --no-cache ffmpeg
 # Copy project files
 COPY package*.json ./
 
-# Install Node.js dependencies
-RUN npm install
+# Install Node.js dependencies with reliability flags
+RUN npm config set registry https://registry.npmjs.org/ && \
+    npm install --network-timeout=100000 --retry=3 --no-audit
 
 # Copy the rest of your application code
 COPY . .
@@ -22,8 +23,8 @@ RUN npm run build
 # Verify the build output
 RUN ls -la /usr/src/app/dist
 
-# Expose the port
-EXPOSE 3000
+# Expose the port - change to 8080 for Cloud Run
+EXPOSE 8080
 
 # Start the app
 CMD ["node", "/usr/src/app/dist/app.js"]
